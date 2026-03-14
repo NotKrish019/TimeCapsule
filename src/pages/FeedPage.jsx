@@ -19,13 +19,11 @@ export default function FeedPage() {
   const [searchQuery, setSearchQuery] = useState('');
   
   // Real-time listener for the entire tips collection (hidden == false)
-  // This ensures that when someone likes/dislikes, the UI updates instantly
   useEffect(() => {
     setLoading(true);
     const q = query(
       collection(db, 'tips'),
-      where('hidden', '==', false),
-      orderBy('createdAt', 'desc')
+      where('hidden', '==', false)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -38,20 +36,18 @@ export default function FeedPage() {
       setError('');
     }, (err) => {
       console.error("Error listening to tips:", err);
-      if (err.message && err.message.includes('index')) {
-        setError('Database index is building. Please wait 1-2 minutes and refresh.');
-      } else {
-        setError('Failed to load tips.');
-      }
+      // Even if this fails, we want to show a clear message
+      setError('Failed to sync with the database. Please check your connection.');
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Optimized Client-Side Filtering
+  // Optimized Client-Side Filtering & Sorting
   const filteredTips = useMemo(() => {
-    return tips.filter(tip => {
+    // 1. Filter
+    const result = tips.filter(tip => {
       const matchesCategory = !categoryFilter || tip.category === categoryFilter;
       const matchesDepartment = !departmentFilter || tip.department === departmentFilter;
       const matchesLocation = !locationFilter || tip.location === locationFilter;
@@ -63,6 +59,13 @@ export default function FeedPage() {
         tip.department?.toLowerCase().includes(lowerSearch);
 
       return matchesCategory && matchesDepartment && matchesLocation && matchesSearch;
+    });
+
+    // 2. Sort chronologically (Newest First)
+    return result.sort((a, b) => {
+      const timeA = a.createdAt?.seconds || 0;
+      const timeB = b.createdAt?.seconds || 0;
+      return timeB - timeA;
     });
   }, [tips, categoryFilter, departmentFilter, locationFilter, searchQuery]);
 
