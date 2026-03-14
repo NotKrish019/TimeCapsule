@@ -25,7 +25,7 @@ export default function FeedPage() {
     const q = query(
       collection(db, 'tips'),
       where('hidden', '==', false),
-      orderBy('upvotes', 'desc')
+      orderBy('createdAt', 'desc')
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
