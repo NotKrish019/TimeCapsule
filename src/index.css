@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-cream: #FCF9ED;
+  --color-brand-green: #064E3B;
+  --color-brand-lavender: #E9D5FF;
+  --color-brand-charcoal: #1A1A1A;
+
+  --font-serif: 'Newsreader', serif;
+  --font-sans: 'Inter', sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-brand-cream);
+    color: var(--color-brand-charcoal);
+    font-family: var(--font-sans);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+  }
+}

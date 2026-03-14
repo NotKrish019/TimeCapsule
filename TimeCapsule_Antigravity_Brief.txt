@@ -1,0 +1,436 @@
+
+TIME CAPSULE
+Project Brief & Execution Plan
+Prepared for Antigravity  —  March 2026
+
+
+
+
+Institutional Memory Resets Every Year
+Every year at every engineering college in India, final-year students graduate and take four years of hard-earned campus knowledge with them — permanently. The next batch arrives and starts from zero. Again.
+
+This is not a single-college problem. It is a full institutional memory reset, every single year, at every one of the 4,000+ engineering colleges in India.
+
+What Gets Lost Every Year
+Which professor actually responds to emails and which does not
+Which labs to avoid and which ones have the equipment that actually works
+Where to print assignments at 11pm before a submission deadline
+How placements actually work — what really happens vs what orientation says
+Which electives are genuinely worth taking
+Unwritten rules of the campus — every college has them, nobody writes them down
+
+Why Existing Solutions Fail
+
+
+
+Time Capsule — A Living Knowledge Base for Campus Life
+Time Capsule is a web application where final-year students leave campus knowledge behind in the form of structured tips before they graduate. Juniors can search, filter, and find these tips instantly — by department, location, and category.
+
+
+How It Works — Three Steps
+
+
+
+1. Institutional Email Login
+The very first thing a user sees is the login screen. Access is restricted exclusively to the college's institutional email ID. One tap using the Google account students already have. No new password. No signup friction. No outsiders.
+Eliminates anonymous abuse before it starts — no anonymity means no garbage posts
+Makes the platform feel like it belongs to the institution, not a generic social network
+Automatically restricts the community to verified members of that college
+
+2. Completely Open Access — No Content Gates
+All tips posted by seniors are visible to every logged-in student immediately. There is no requirement to post before you can read. There is no contribution wall. There is no locked content.
+Students love free. Free and open access drives adoption.
+Reading is a gateway behaviour — students who read tips naturally become invested in the platform and many will post voluntarily
+Contribution comes from engagement, not coercion — a well-designed platform creates voluntary contributors
+
+
+3. Four Categories
+Every tip belongs to exactly one of four categories:
+Academics — Professors, courses, study strategies, exam tips, electives
+Social — Events, clubs, campus culture, unwritten social rules
+Infrastructure — Facilities, labs, hostels, canteen, printing, transport
+Career — Placements, internships, companies, resume tips, interview prep
+
+4. Department Filter
+Students filter tips by their branch — CSE, ECE, Mechanical, Civil, and so on. A CSE junior only sees CSE-relevant tips by default. This removes noise and makes every result feel personally relevant.
+
+5. Location Tags
+Every tip is tagged to a campus location — library, lab, canteen, hostel, department building. Students can browse by location and discover tips relevant to where they physically are.
+
+6. Upvote System
+Students upvote tips they find genuinely useful. The most helpful tips rise to the top. Bad or outdated content gets ignored naturally. No complex algorithm — community votes surface the best knowledge.
+
+7. Semester Stamp
+Every tip is automatically stamped with the semester and year it was posted. Students can judge relevance themselves without needing an admin to curate or expire content manually.
+
+
+
+What Gets Built in Phase 1
+Every feature below must ship before the platform goes live at the pilot college. No feature is decorative.
+
+
+What Is NOT in MVP
+No native mobile app — the web application works in any mobile browser
+No 3D campus map — deferred to Phase 2
+No AR or geofencing features — deferred to Phase 2
+No AI recommendations — deferred after adoption is proven
+No complex gamification — upvotes are the only mechanic
+No dedicated moderation dashboard — admin handles via Firebase console
+
+
+
+
+Step-by-Step Implementation Sequence
+The following is the exact order in which features should be designed, built, and tested. Each step is a discrete deliverable. Nothing begins until the previous step is reviewed and approved.
+
+STEP 1 — Project Setup & Infrastructure
+Initialise React + Vite project
+Install Tailwind CSS and configure with the brand design system
+Connect Firebase project (Auth, Firestore, Storage)
+Configure Google OAuth — restrict to institutional email domain
+Deploy skeleton to Vercel with CI/CD from GitHub
+Verify: login with institutional email works end-to-end
+
+STEP 2 — Authentication Flow
+Build login screen — hero landing with tagline, institutional email prompt
+Implement Google OAuth one-tap sign-in
+Implement domain validation (reject non-institutional emails at auth layer)
+On first login, capture department and year via onboarding screen
+Create user document in Firestore on first login
+Verify: new user can sign in, profile is created, domain validation rejects outsiders
+
+STEP 3 — Tip Creation
+Build the Post a Tip screen
+Form fields: title (max 120 chars), content (max 2,000 chars), category selector, department selector, location tag
+Semester stamp auto-applied on submission (no user input required)
+Write tip to Firestore /tips/ collection
+Verify: tip appears in Firestore with all fields correctly populated
+
+STEP 4 — Browse & Discovery
+Build the main tips feed (home screen after login)
+Default view: all tips, sorted by upvotes descending
+Filter bar: by category, by department, by location
+Keyword search across title and content
+Tip card design: title, category badge, department, location, semester stamp, upvote count
+All tips visible to all logged-in students — no gates
+Verify: student can browse, filter, and search all tips immediately after login
+
+STEP 5 — Upvote System
+Add upvote button to tip card and tip detail view
+One upvote per student per tip (prevent double-voting)
+Increment upvotes count in Firestore, add UID to upvotedBy array
+Auto-apply verified badge when upvotes cross 10
+Verified badge displayed visually on tip card
+Verify: upvotes increment correctly, badge appears at threshold, double-voting blocked
+
+STEP 6 — Bookmarks
+Add bookmark icon to tip card
+Toggle bookmark: add/remove tip ID from user's bookmarks array in Firestore
+Build Saved Tips screen (dedicated bookmark view)
+Verify: bookmarks persist across sessions, appear in saved screen
+
+STEP 7 — Community Flagging
+Add flag/report button to tip card and tip detail view
+Increment flagCount in Firestore, add UID to flaggedBy array
+When flagCount reaches 3, set hidden: true automatically
+Hidden tips do not appear in any feed or search
+Verify: tip disappears from feed at 3 flags, reappears if hidden manually reversed by admin
+
+STEP 8 — Ask a Senior Thread
+Build dedicated Ask a Senior section
+Juniors post questions (title + content)
+Any student can reply to questions
+Questions displayed with reply count, sorted by most recent activity
+Upvote on best answers to surface the most useful response
+Verify: question appears, answers thread correctly, upvotes work on answers
+
+STEP 9 — Still Relevant? Button
+Add Still Relevant? button to tips older than one semester
+Students who find the tip current click to confirm
+Display confirmation count on tip card
+Verify: confirmation count increments, button only appears on old tips
+
+STEP 10 — Campus Notice Board
+Build Campus Notice Board as a separate section
+Any logged-in student can post a notice (title + content)
+Every notice has a hard expiry of 7 days from creation
+Expired notices auto-hidden (Firestore TTL or scheduled function)
+Active notices displayed in reverse chronological order
+Verify: notice appears, disappears at 7 days, section clearly separate from tips
+
+STEP 11 — Polish, Performance & Responsiveness
+Full mobile responsiveness pass — test on common Android screen sizes
+Loading states for all data fetches
+Empty states (no tips found, no bookmarks yet, etc.)
+Error states (failed submission, network error)
+Pagination or infinite scroll on tips feed
+Performance audit — Firestore query optimisation, index configuration
+
+STEP 12 — Deployment & Pilot Launch
+Final QA pass across all flows on mobile and desktop
+Configure Firestore security rules for production
+Set up Vercel production environment with environment variables
+DNS configuration if custom domain is required
+Soft launch to a small group (50–100 students) for feedback
+Monitor Firebase usage — confirm within free tier limits
+
+
+
+Colour Palette
+All colours are defined by the product team. No deviations without explicit approval.
+
+
+Typography
+
+
+
+
+Stack
+
+Firestore Data Model
+Tip Document — /tips/{id}
+
+User Document — /users/{uid}
+
+
+
+
+
+
+
+
+
+
+Three Layers of Trust
+Time Capsule does not rely on a moderation team. The platform is designed so that moderation is largely automatic.
+
+Layer 1 — Verified Identity (Strongest Deterrent)
+Every post is tied to a student's institutional email. There is no anonymity. Students do not post explicit or harmful content when their college email is attached to it. This eliminates 90% of the moderation problem before it starts.
+
+Layer 2 — Community Flagging
+Three flags from other students auto-hides a post instantly. No admin required. The community self-moderates.
+
+Layer 3 — Admin Deletion
+Platform admin (initially the founding team, later a designated college representative) can permanently delete any post directly from the Firebase console. No moderation dashboard required at MVP stage.
+
+
+Revenue Strategy
+
+
+
+Unique Advantages
+No platform like this exists — WhatsApp, word of mouth, and handbooks all fail structurally
+Verified identity changes behaviour — institutional email removes anonymity and raises content quality automatically
+Completely free drives adoption — no friction, no gates, students arrive and immediately find value
+Compounding institutional memory — every graduating batch adds tips. Year five is dramatically more valuable than year one
+Community-validated quality — upvotes surface the best, flagging removes the worst, the community curates itself
+Zero friction access — any browser, any device, one-tap login with an existing Google account
+The network effect is geographic — showing a tip to a friend in front of you is the entire go-to-market
+
+
+
+
+Time Capsule — Project Brief for Antigravity
+All design elements — colours, fonts, layouts, components — require sign-off before implementation.
+March 2026  |  Confidential
+
+--- TABLE 1 ---
+“What took you a semester to learn,
+takes them 30 seconds to find.”
+
+--- TABLE 2 ---
+STAGE
+Ideation → Build | STACK
+React + Firebase + Vercel | MARKET
+4,000+ Engineering Colleges
+
+--- TABLE 3 ---
+01 — THE PROBLEM
+
+--- TABLE 4 ---
+Existing Solution | Why It Fails
+WhatsApp Groups | Die the moment seniors leave. No structure, no search, no permanence.
+Word of Mouth | Reaches 10 people, not 1,000. Degrades with every retelling.
+Orientation Handbooks | Outdated before they are printed. Nobody re-reads them after day one.
+College Notice Boards | Physical, temporary, and limited to official announcements.
+
+--- TABLE 5 ---
+02 — THE SOLUTION
+
+--- TABLE 6 ---
+Core Principle
+Every piece of knowledge posted by seniors is completely free and instantly accessible to every student. No barriers. No paywalls. No contribution requirements to unlock content. Students love free. Time Capsule is entirely free.
+
+--- TABLE 7 ---
+01 | A senior logs in with their institutional college email. Their identity is verified. They leave a tip — a piece of campus knowledge others will need after they graduate.
+02 | The tip is tagged by category (Academics, Social, Infrastructure, or Career), department, and campus location. It is stamped with the current semester automatically.
+03 | Any student — junior, senior, or anyone with a college email — searches and finds tips instantly. Free. No conditions. No gates. Just the knowledge they need, immediately.
+
+--- TABLE 8 ---
+03 — CORE DESIGN DECISIONS
+
+--- TABLE 9 ---
+Design Note — Driving Voluntary Contribution
+Instead of forcing contribution via a paywall mechanic, Time Capsule drives it through identity and social belonging. When a student reads ten tips from seniors and feels the platform helped them, they post a tip because they want to give back — not because they have to. This produces higher quality contributions and better community sentiment.
+
+--- TABLE 10 ---
+04 — FULL FEATURE LIST (MVP — PHASE 1)
+
+--- TABLE 11 ---
+# | Feature | Why It Matters
+1 | Institutional email login (Google OAuth) | Verified identity. No outsiders. No anonymity.
+2 | Post a tip with category, department, and location tags | Structured content. Not a feed of unstructured noise.
+3 | Browse tips — free and open to all logged-in students | No friction. Maximum adoption.
+4 | Search tips by keyword | Students find exactly what they need instantly.
+5 | Filter by category, department, and location | Personally relevant results only.
+6 | Upvote system | Community surfaces the best tips automatically.
+7 | Semester stamp on every tip | Students judge freshness themselves.
+8 | Verified tip badge (auto at 10 upvotes) | Trusted tips stand out visually.
+9 | Community flagging (3 flags auto-hides) | Bad content removed without admin intervention.
+10 | Ask a Senior thread | Direct Q&A between juniors and seniors.
+11 | Bookmarks | Students save tips they want to revisit.
+12 | Still Relevant? button | Community keeps content fresh without admin curation.
+13 | Campus Notice Board (expires 7 days) | Time-sensitive posts separate from permanent tips.
+
+--- TABLE 12 ---
+Philosophy
+Build the habit first. Layer on features after students are actually using it daily. Simple done well beats complex done poorly.
+
+--- TABLE 13 ---
+05 — EXECUTION PLAN FOR ANTIGRAVITY
+
+--- TABLE 14 ---
+06 — DESIGN SYSTEM
+
+--- TABLE 15 ---
+Role | Hex Code | Usage
+Background | #FCF9ED | Page background. Warm off-white, paper-like feel.
+Primary Accent | #064E3B | Announcement banners, section headers, primary branding, CTA borders.
+Action Colour | #E9D5FF | Primary action buttons (Start Exploring), secondary actions, highlights.
+Text & Borders | #1A1A1A | All primary text, borders, thin dividers.
+
+--- TABLE 16 ---
+Use | Font | Rationale
+Hero Headings | Newsreader or Fraunces (Serif) | Tradition, history, the passing-down of knowledge. Authoritative.
+Body & Navigation | Inter or Outfit (Sans-Serif) | High legibility. Modern. Accessible on all screen sizes.
+
+--- TABLE 17 ---
+Design Approval Protocol
+No visual element — colour, font choice, component design, spacing, or layout — is implemented without explicit sign-off from the product team. Antigravity presents mockups for review before any front-end code is written for that component.
+
+--- TABLE 18 ---
+07 — TECHNICAL ARCHITECTURE
+
+--- TABLE 19 ---
+Frontend Framework | React + Vite
+Styling | Tailwind CSS (configured with brand palette)
+Backend | Firebase Firestore (real-time NoSQL)
+Authentication | Firebase Auth + Google OAuth restricted to institutional domain
+Storage | Firebase Storage (for future media uploads)
+Deployment | Vercel (CI/CD via GitHub)
+Development Environment | Google Project IDX
+Architecture | Fully serverless — zero custom backend servers
+
+--- TABLE 20 ---
+Field | Type | Notes
+id | string | Auto-generated Firestore document ID
+title | string | Max 120 characters
+content | string | Max 2,000 characters
+category | enum | academics | social | infrastructure | career
+department | string | CSE, ECE, Mechanical, Civil, etc.
+location | string | library, lab, canteen, hostel, etc.
+authorId | string | Firebase UID
+authorName | string | Display name from Google account
+upvotes | number | Default 0
+upvotedBy | array | Array of Firebase UIDs
+flagCount | number | Default 0
+flaggedBy | array | Array of Firebase UIDs
+hidden | boolean | Auto-set true when flagCount reaches 3
+semester | string | e.g. Semester 1, 2024 — auto-applied
+createdAt | timestamp | Firestore server timestamp
+isVerified | boolean | Auto-set when upvotes exceed 10
+
+--- TABLE 21 ---
+Field | Type | Notes
+uid | string | Firebase Auth UID
+name | string | Display name from Google account
+email | string | Institutional email — verified at login
+college | string | College name — captured at onboarding
+department | string | Student's branch — captured at onboarding
+totalUpvotes | number | Aggregated upvotes received on their tips
+tipsCreated | number | Count of tips they have contributed
+bookmarks | array | Array of bookmarked tip IDs
+joinedAt | timestamp | Firestore server timestamp
+
+--- TABLE 22 ---
+08 — PRODUCT ROADMAP
+
+--- TABLE 23 ---
+PHASE 1 — Build & Validate  |  Months 1–2
+Ship the core product. Get it in students' hands. Prove the habit forms. | PHASE 1 — Build & Validate  |  Months 1–2
+Ship the core product. Get it in students' hands. Prove the habit forms.
+1 | Institutional email login via Google OAuth
+2 | Post tips with category, department, and location tags
+3 | Browse, search, and filter tips — free and open to all
+4 | Upvote system and verified badge
+5 | Community flagging (3 flags auto-hides)
+6 | Ask a Senior thread
+7 | Bookmarks
+8 | Semester stamps
+9 | Still Relevant? button
+10 | Campus Notice Board with 7-day expiry
+11 | Fully responsive web application deployed on Vercel
+
+--- TABLE 24 ---
+PHASE 2 — Grow  |  Months 3–4
+Expand to more colleges. Deepen the feature set. | PHASE 2 — Grow  |  Months 3–4
+Expand to more colleges. Deepen the feature set.
+1 | Multi-college support — new deployment per institution
+2 | Richer user profiles with contribution history
+3 | Batch-specific tip filters
+4 | Alumni contributions — graduates can still post
+5 | Department-specific feeds
+6 | Enhanced search with advanced filtering
+7 | 3D campus map exploration (Three.js + React Three Fiber)
+
+--- TABLE 25 ---
+PHASE 3 — Scale  |  Months 5–6
+Monetise. Whitelabel SaaS for institutions. | PHASE 3 — Scale  |  Months 5–6
+Monetise. Whitelabel SaaS for institutions.
+1 | Whitelabel SaaS — $5 per institution per month
+2 | Admin moderation dashboard for college representatives
+3 | Analytics portal for college administrators
+4 | Alumni association integration
+5 | Corporate onboarding use case
+6 | Multi-campus support within single institution
+
+--- TABLE 26 ---
+09 — KEY NUMBERS & CONSTRAINTS
+
+--- TABLE 27 ---
+Tip title limit | 120 characters | Tip content limit | 2,000 characters
+Auto-hide threshold | 3 community flags | Verified badge threshold | 10 upvotes
+Notice board expiry | 7 days | Firebase free reads/day | 50,000
+Target MAU (Semester 1) | 500+ students | Target tips (Year 1) | 1,000+
+SaaS pricing (Phase 3) | $5 / institution / month | Engineering colleges in India | 4,000+
+Phase 1 duration | 2 months | Phase 2 duration | Months 3–4
+Categories | 4 | Geofence radius (Phase 2) | 100 metres
+
+--- TABLE 28 ---
+10 — CONTENT MODERATION STRATEGY
+
+--- TABLE 29 ---
+11 — BUSINESS MODEL
+
+--- TABLE 30 ---
+Phase | Model
+Phase 1 | Free — build adoption and content density at the pilot college. No revenue. Goal: prove the habit.
+Phase 3 | B2B SaaS — colleges pay $5/month for a branded, whitelabelled instance. Same codebase, new deployment.
+Extension | Alumni associations, corporate onboarding for new hires. Same platform, same knowledge transfer problem.
+
+--- TABLE 31 ---
+12 — WHY TIME CAPSULE WILL WORK
+
+--- TABLE 32 ---
+Tagline
+What took you a semester to learn, takes them 30 seconds to find.

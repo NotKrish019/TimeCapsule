@@ -1,0 +1,621 @@
+
+TIME CAPSULE
+System Requirements Document
+SRD v1.0   |   March 2026   |   Prepared for Antigravity
+
+
+
+
+1.1  Document Purpose
+This System Requirements Document (SRD) defines all functional requirements, non-functional requirements, data model specifications, interface requirements, security rules, Firestore index configuration, system constraints, test requirements, and open issues for the Time Capsule web application.
+It is the authoritative reference for the Antigravity development team. Every feature built must trace back to a requirement stated in this document. No feature is implemented that does not appear here without a formal change request.
+
+1.2  Scope
+This document covers Phase 1 (MVP) of the Time Capsule product — a fully serverless web application built on React, Firebase, and Vercel, deployed initially as a pilot at a single engineering college in India.
+Phase 2 and Phase 3 features (multi-college support, 3D campus map, AR, SaaS whitelabel, admin dashboard) are out of scope for this document and are explicitly listed in Section 11.
+
+1.3  Version History
+
+1.4  Definitions & Abbreviations
+
+
+
+2.1  Product Description
+Time Capsule is a web application that enables final-year engineering students to preserve campus knowledge for future batches. Seniors post tips covering academics, social life, infrastructure, and career. Juniors search and access this knowledge instantly, filtered by department, category, and campus location.
+The platform is designed for zero-friction access. Any student with a valid institutional email can log in and immediately access all content. There are no contribution walls, no paywalls, and no locked features. The platform runs entirely in a browser — no installation, no download.
+
+2.2  System Architecture Overview
+
+2.3  System Context
+Time Capsule operates entirely within the browser. It communicates directly with Firebase services via the Firebase JavaScript SDK. There are no intermediate API servers. All business logic that can be enforced server-side is enforced via Firestore Security Rules.
+Students access the application via any modern browser on mobile or desktop
+Firebase Auth handles all authentication and session management
+Firestore handles all data storage and real-time updates
+Vercel serves the static React build globally via CDN
+
+2.4  User Roles
+
+
+
+
+3.1  Authentication & Onboarding
+
+
+3.2  Tip Creation
+
+
+3.3  Browse, Search & Discovery
+
+
+3.4  Upvote System
+
+
+3.5  Bookmarks
+
+
+3.6  Community Flagging
+
+
+3.7  Ask a Senior Thread
+
+
+3.8  Still Relevant? Button
+
+
+3.9  Campus Notice Board
+
+
+
+
+4.1  Performance
+
+
+4.2  Responsiveness & Cross-Device Compatibility
+
+
+4.3  Accessibility
+
+
+4.4  Reliability & Availability
+
+
+4.5  Security
+
+
+
+
+5.1  Collection: /tips/{tipId}
+
+
+5.2  Collection: /users/{uid}
+
+
+5.3  Collection: /notices/{noticeId}
+
+
+5.4  Collection: /questions/{questionId}
+
+
+Note: Answers to questions are stored in the subcollection /questions/{questionId}/answers/{answerId}. Answer documents follow the same schema as tips but without category, department, location, semester, or isVerified fields.
+
+
+
+
+6.1  Rules Specification
+
+The following rules govern all read and write access to Firestore. Each rule is a discrete requirement.
+
+Global Rules
+
+/tips Collection Rules
+
+/users Collection Rules
+
+/notices Collection Rules
+
+
+
+
+
+
+
+8.1  Design System Compliance
+
+
+8.2  Navigation Structure
+
+The application SHALL implement the following primary navigation structure, accessible on all screens after login:
+Home / Feed — Main tip browsing experience
+Post a Tip — Tip creation form
+Ask a Senior — Q&A thread section
+Notice Board — Campus Notice Board
+Saved — Bookmarked tips
+Profile — User profile and sign-out
+
+Note: On mobile, navigation SHALL be presented as a bottom navigation bar. On desktop, navigation SHALL be presented as a top navigation bar or sidebar. Final layout is subject to design sign-off.
+
+8.3  Required UI States
+
+Every data-fetching component SHALL implement all three of the following states:
+
+
+
+
+9.1  Authentication Tests
+
+
+9.2  Tip Creation Tests
+
+
+9.3  Browse & Discovery Tests
+
+
+9.4  Upvote & Flagging Tests
+
+
+9.5  Campus Notice Board Tests
+
+
+
+
+10.1  Hard Constraints
+
+
+10.2  Assumptions
+
+The following assumptions are made in this document. If any assumption proves incorrect, a formal change request is required.
+The pilot college has an institutional Google Workspace account issuing @college.edu.in style email addresses that work with Google OAuth.
+Students at the pilot college have smartphones with modern browsers capable of running a React SPA.
+The Firebase free tier (Spark plan) is sufficient for the Phase 1 pilot of 500 MAU. This assumption must be revisited before Phase 2.
+The college does not require a custom domain for Phase 1. A Vercel subdomain is acceptable.
+The founding team acts as platform admin for Phase 1. No college representative admin is required until Phase 2.
+Content moderation is handled entirely by the three-layer system (verified identity + community flagging + admin deletion). No AI moderation is required in Phase 1.
+Semester dates are well-defined and consistent enough that the auto-applied semester stamp (based on the calendar date of posting) is accurate.
+
+
+
+The following features are explicitly excluded from Phase 1. No engineering effort shall be directed toward these items without a formal scope change.
+
+
+
+
+The following issues are unresolved at the time of writing this SRD. Each must be resolved before the relevant feature is built.
+
+
+
+
+This SRD is approved for use when all parties below have signed off. No development work on any section shall begin prior to approval of that section.
+
+
+
+
+Time Capsule — System Requirements Document v1.0
+March 2026   |   Confidential   |   Prepared for Antigravity
+
+--- TABLE 1 ---
+“What took you a semester to learn,
+takes them 30 seconds to find.”
+
+--- TABLE 2 ---
+Document Type
+SRD v1.0 | Status
+Draft — For Review | Product
+Time Capsule | Audience
+Antigravity Dev Team
+
+--- TABLE 3 ---
+1 — DOCUMENT CONTROL
+
+--- TABLE 4 ---
+Version | Date | Author | Summary of Changes
+v1.0 | March 2026 | Time Capsule Product Team | Initial release based on updated project brief. Contribution-unlock mechanic removed. Open access confirmed.
+
+--- TABLE 5 ---
+SRD | System Requirements Document
+MVP | Minimum Viable Product — the Phase 1 feature set
+Tip | A structured piece of campus knowledge posted by a student
+Institutional Email | A college-issued email address (e.g. student@college.edu.in)
+UID | Firebase Auth User ID — unique identifier per authenticated user
+Firestore | Google Firebase's real-time NoSQL cloud database
+OAuth | Open Authorisation — the protocol used for Google Sign-In
+Domain Restriction | Limiting login to email addresses matching the college's domain
+Auto-hide | Automated suppression of a tip from all feeds without admin action
+Verified Badge | Visual indicator applied automatically when a tip reaches 10 upvotes
+Semester Stamp | Auto-applied metadata recording the semester and year of posting
+TTL | Time-To-Live — automatic expiry applied to Campus Notice Board posts
+CI/CD | Continuous Integration / Continuous Deployment via GitHub + Vercel
+
+--- TABLE 6 ---
+2 — SYSTEM OVERVIEW
+
+--- TABLE 7 ---
+Frontend | React 18 + Vite — single-page application
+Styling | Tailwind CSS — configured with brand design tokens
+Database | Firebase Firestore — real-time NoSQL, serverless
+Authentication | Firebase Auth + Google OAuth with institutional domain restriction
+File Storage | Firebase Storage — reserved for Phase 2 media uploads
+Deployment | Vercel — automatic CI/CD on push to main branch via GitHub
+Dev Environment | Google Project IDX
+Architecture | Fully serverless — no custom backend, no servers to manage
+
+--- TABLE 8 ---
+Role | Description | Access Level | Created By
+Student (Junior) | Years 1–3, primary consumer of tips | Full read access to all tips. Can post, upvote, flag, bookmark. | Self-registration via institutional email
+Student (Senior) | Year 4, primary producer of tips before graduation | Full read access. Can post, upvote, flag, bookmark. | Self-registration via institutional email
+Platform Admin | Founding team member or designated college rep | Firebase console access. Can delete any document. | Manual — no self-registration
+
+--- TABLE 9 ---
+3 — FUNCTIONAL REQUIREMENTS
+
+--- TABLE 10 ---
+Requirement IDs
+Every requirement is assigned a unique ID in the format FR-XXX (Functional Requirement) or NFR-XXX (Non-Functional Requirement). All test cases in Section 9 reference these IDs. Priority levels: P1 = must-have for launch, P2 = important but not launch-blocking, P3 = nice-to-have.
+
+--- TABLE 11 ---
+Req. ID | Requirement | Priority | Verification Method
+FR-001 | The system SHALL provide a login screen as the entry point. No content is accessible before login. | P1 | Manual test — access tip URL while logged out
+FR-002 | The system SHALL implement Google OAuth as the sole authentication method. | P1 | Manual test — confirm no password login option exists
+FR-003 | The system SHALL restrict login to email addresses matching the configured institutional domain (e.g. @college.edu.in). Any other domain SHALL be rejected with an error message. | P1 | Test with non-institutional email — confirm rejection
+FR-004 | On successful first login, the system SHALL display an onboarding screen prompting the user to enter their department and year of study. | P1 | New account test — confirm onboarding screen appears
+FR-005 | On successful first login, the system SHALL create a user document in /users/{uid} in Firestore with all required fields populated. | P1 | Firestore console — verify document created on first login
+FR-006 | On subsequent logins, the system SHALL bypass the onboarding screen and route the user directly to the main feed. | P1 | Second login test — confirm onboarding not shown again
+FR-007 | The system SHALL provide a sign-out option accessible from the main navigation. | P1 | Manual test — confirm sign-out clears session
+
+--- TABLE 12 ---
+Req. ID | Requirement | Priority | Verification Method
+FR-010 | The system SHALL provide a Post a Tip screen accessible from the main navigation. | P1 | Manual test — locate and access the screen
+FR-011 | The tip creation form SHALL include the following required fields: title, content, category, department, location tag. | P1 | Form submission test — confirm each field is required
+FR-012 | The title field SHALL accept a maximum of 120 characters. The system SHALL display a live character counter. | P1 | Test with 121-character input — confirm rejection
+FR-013 | The content field SHALL accept a maximum of 2,000 characters. The system SHALL display a live character counter. | P1 | Test with 2,001-character input — confirm rejection
+FR-014 | The category field SHALL be a dropdown selector with exactly four options: Academics, Social, Infrastructure, Career. | P1 | UI inspection — confirm exactly four options
+FR-015 | The department field SHALL be a dropdown selector populated from a predefined list of departments for the configured college. | P1 | UI inspection — confirm all departments are listed
+FR-016 | The location tag field SHALL be a dropdown selector populated from a predefined list of campus locations. | P1 | UI inspection — confirm location list is populated
+FR-017 | On submission, the system SHALL auto-apply the semester stamp (current semester + year) to the tip document. The student SHALL NOT be required to enter this manually. | P1 | Firestore console — verify semester field is populated automatically
+FR-018 | On successful submission, the tip document SHALL be written to /tips/{id} in Firestore with all required fields. | P1 | Firestore console — verify all fields present on new document
+FR-019 | The system SHALL display a confirmation message after successful tip submission. | P1 | Manual test — submit a tip and confirm success state
+FR-020 | The system SHALL NOT allow submission of a tip with any required field empty. | P1 | Submit with each field empty in turn — confirm error state
+
+--- TABLE 13 ---
+Req. ID | Requirement | Priority | Verification Method
+FR-030 | The system SHALL display a main feed of all tips visible to any logged-in student immediately upon login. No action is required before viewing tips. | P1 | Login test — confirm tips visible immediately, no gate
+FR-031 | The default sort order for the main feed SHALL be upvotes descending (highest first). | P1 | Add tips with different upvote counts — confirm order
+FR-032 | The system SHALL provide a filter by category. Selecting a category SHALL display only tips matching that category. | P1 | Apply each category filter — confirm results
+FR-033 | The system SHALL provide a filter by department. Selecting a department SHALL display only tips matching that department. | P1 | Apply each department filter — confirm results
+FR-034 | The system SHALL provide a filter by location. Selecting a location SHALL display only tips tagged to that location. | P1 | Apply location filter — confirm results
+FR-035 | Filters SHALL be combinable. A student SHALL be able to filter by category AND department AND location simultaneously. | P1 | Apply all three filters simultaneously — confirm results
+FR-036 | The system SHALL provide a keyword search field that queries tip titles and content. | P1 | Search known keyword — confirm matching tips appear
+FR-037 | The tip card in the feed SHALL display: title, category badge, department, location tag, semester stamp, upvote count, and verified badge (if applicable). | P1 | UI inspection of tip card — verify all fields present
+FR-038 | Tapping a tip card SHALL open the full tip detail view showing all fields including the full content. | P1 | Tap a tip — confirm detail view loads correctly
+FR-039 | Tips with hidden: true SHALL NOT appear in any feed, search results, or detail view for standard users. | P1 | Flag a tip 3 times — confirm it disappears from all views
+FR-040 | The system SHALL implement pagination or infinite scroll on the main feed. All tips SHALL NOT be loaded in a single query. | P1 | Firestore reads audit — confirm paginated queries
+
+--- TABLE 14 ---
+Req. ID | Requirement | Priority | Verification Method
+FR-050 | The system SHALL provide an upvote button on each tip card and in the tip detail view. | P1 | UI inspection — confirm upvote button present
+FR-051 | A logged-in student SHALL be able to upvote any tip that they did not author. | P1 | Upvote a tip as a different user — confirm count increments
+FR-052 | Each student SHALL be able to upvote a given tip exactly once. Attempting to upvote again SHALL toggle the upvote off (remove it). | P1 | Upvote twice — confirm second tap removes the upvote
+FR-053 | The student's UID SHALL be added to the upvotedBy array in Firestore on upvote and removed on toggle-off. | P1 | Firestore console — verify upvotedBy array state
+FR-054 | When a tip's upvotes field reaches 10, the system SHALL automatically set isVerified: true on that tip document. | P1 | Add 10 upvotes to a test tip — confirm isVerified becomes true
+FR-055 | A tip with isVerified: true SHALL display a Verified badge visually on both the tip card and the detail view. | P1 | UI inspection — confirm badge appears at 10 upvotes
+FR-056 | A student SHALL NOT be able to upvote their own tip. The upvote button SHALL be hidden or disabled on tips the logged-in user authored. | P1 | View own tip — confirm upvote is disabled
+
+--- TABLE 15 ---
+Req. ID | Requirement | Priority | Verification Method
+FR-060 | The system SHALL provide a bookmark icon on each tip card and in the tip detail view. | P1 | UI inspection — confirm bookmark icon present
+FR-061 | Tapping the bookmark icon SHALL toggle the bookmark state for that tip for the logged-in user. | P1 | Bookmark and un-bookmark — confirm state toggles
+FR-062 | The tip ID SHALL be added to the user's bookmarks array in Firestore when bookmarked and removed when un-bookmarked. | P1 | Firestore console — verify bookmarks array state
+FR-063 | The system SHALL provide a dedicated Saved Tips screen listing all tips the user has bookmarked. | P1 | Bookmark several tips — confirm all appear in Saved screen
+FR-064 | Bookmarks SHALL persist across sessions. A tip bookmarked in one session SHALL remain bookmarked in subsequent sessions. | P1 | Bookmark, log out, log in — confirm bookmark persists
+
+--- TABLE 16 ---
+Req. ID | Requirement | Priority | Verification Method
+FR-070 | The system SHALL provide a flag/report button on each tip card and in the tip detail view. | P1 | UI inspection — confirm flag option present
+FR-071 | A logged-in student SHALL be able to flag any tip that they did not author. | P1 | Flag a tip as a different user — confirm flagCount increments
+FR-072 | Each student SHALL only be able to flag a given tip once. The flag button SHALL be disabled after a student has flagged that tip. | P1 | Flag twice — confirm second flag is rejected
+FR-073 | The student's UID SHALL be added to the flaggedBy array and flagCount SHALL be incremented in Firestore. | P1 | Firestore console — verify flaggedBy and flagCount
+FR-074 | When flagCount reaches 3, the system SHALL automatically set hidden: true on that tip document. | P1 | Trigger 3 flags on a test tip — confirm hidden: true in Firestore
+FR-075 | A tip with hidden: true SHALL immediately disappear from all feeds, search results, and direct URL access for standard users. (See FR-039) | P1 | After 3 flags, verify tip is inaccessible in all views
+FR-076 | The admin SHALL be able to reverse a hidden status by setting hidden: false directly in the Firebase console. | P1 | Admin reversal test — confirm tip reappears after hidden: false
+
+--- TABLE 17 ---
+Req. ID | Requirement | Priority | Verification Method
+FR-080 | The system SHALL provide a dedicated Ask a Senior section accessible from the main navigation. | P1 | Manual test — locate and access the section
+FR-081 | Any logged-in student SHALL be able to post a question with a title and content body. | P1 | Post a question — confirm it appears in the section
+FR-082 | Any logged-in student SHALL be able to reply to any question. | P1 | Post a reply — confirm it threads under the question
+FR-083 | Questions SHALL be displayed with reply count and sorted by most recent activity (last reply or post time). | P1 | Sort order test — confirm recent activity ordering
+FR-084 | Individual answers within a thread SHALL be upvoteable using the same upvote mechanic as tips. | P2 | Upvote an answer — confirm count increments
+FR-085 | Questions and answers SHALL be subject to the same community flagging rules as tips. | P2 | Flag a question — confirm auto-hide at 3 flags
+
+--- TABLE 18 ---
+Req. ID | Requirement | Priority | Verification Method
+FR-090 | The system SHALL display a Still Relevant? button on tips that were posted more than one semester ago. | P1 | View a tip older than one semester — confirm button appears
+FR-091 | Any logged-in student SHALL be able to click Still Relevant? once per tip. Repeated clicks SHALL be prevented. | P1 | Click twice — confirm second click rejected
+FR-092 | The system SHALL display a confirmation count on the tip card showing how many students have confirmed the tip is still relevant. | P2 | Multiple confirmations — verify count displayed correctly
+
+--- TABLE 19 ---
+Req. ID | Requirement | Priority | Verification Method
+FR-100 | The system SHALL provide a Campus Notice Board section, visually and navigably distinct from the tips feed. | P1 | UI inspection — confirm it is a separate section
+FR-101 | Any logged-in student SHALL be able to post a notice with a title and content body. | P1 | Post a notice — confirm it appears on the board
+FR-102 | Every notice SHALL have a hard expiry of exactly 7 days from the createdAt timestamp. | P1 | Post a test notice — confirm it is hidden after 7 days
+FR-103 | Expired notices SHALL be hidden automatically. The system SHALL NOT display expired notices to users. | P1 | Verify expired notices do not appear in board listing
+FR-104 | Active notices SHALL be displayed in reverse chronological order (most recent first). | P1 | Post multiple notices — confirm ordering
+FR-105 | The notice creation form SHALL display the 7-day expiry policy to the poster before submission. | P2 | UI inspection — confirm expiry notice is visible
+
+--- TABLE 20 ---
+4 — NON-FUNCTIONAL REQUIREMENTS
+
+--- TABLE 21 ---
+Req. ID | Requirement | Priority | Verification Method
+NFR-001 | The initial page load (Time to Interactive) SHALL complete within 3 seconds on a standard 4G mobile connection. | P1 | Lighthouse audit on mobile emulation — TTI < 3s
+NFR-002 | The tips feed SHALL render within 1.5 seconds of login on a standard 4G connection. | P1 | Performance timing test on feed load
+NFR-003 | Firestore queries SHALL use pagination. No query SHALL request more than 20 documents per page. | P1 | Code review — confirm limit(20) on all feed queries
+NFR-004 | The application SHALL remain functional within the Firebase free tier limit of 50,000 Firestore reads per day for the initial pilot (500 MAU). | P1 | Firebase console usage monitoring
+
+--- TABLE 22 ---
+Req. ID | Requirement | Priority | Verification Method
+NFR-010 | The application SHALL be fully functional on screen widths from 360px (small Android) to 1440px (desktop). | P1 | Browser DevTools responsive test — 360px and 1440px
+NFR-011 | The application SHALL be tested and functional on Chrome (Android), Safari (iOS), and Chrome (desktop). | P1 | Manual test on each browser — confirm all features work
+NFR-012 | No horizontal scroll SHALL be present on any screen at any supported viewport width. | P1 | Visual test at 360px — confirm no horizontal scroll
+NFR-013 | All interactive elements (buttons, links, form fields) SHALL have a minimum touch target size of 44×44 CSS pixels on mobile. | P1 | DevTools inspection — measure tap target sizes
+
+--- TABLE 23 ---
+Req. ID | Requirement | Priority | Verification Method
+NFR-020 | All images and icons that convey meaning SHALL have descriptive alt text or aria-label attributes. | P2 | Accessibility audit — check alt/aria attributes
+NFR-021 | The application SHALL achieve a minimum Lighthouse Accessibility score of 85. | P2 | Lighthouse accessibility audit
+NFR-022 | Text contrast ratios SHALL meet WCAG AA standards (minimum 4.5:1 for normal text). | P1 | Contrast checker — verify Charcoal (#1A1A1A) on Cream (#FCF9ED)
+
+--- TABLE 24 ---
+Req. ID | Requirement | Priority | Verification Method
+NFR-030 | The application SHALL target 99.5% uptime, inheriting Firebase and Vercel infrastructure SLAs. | P1 | Defer to Firebase / Vercel SLA documentation
+NFR-031 | All Firestore write operations SHALL display appropriate loading states and error messages if the write fails. | P1 | Simulate network failure during write — confirm error state
+NFR-032 | The application SHALL display a meaningful empty state when a feed or search returns zero results. | P1 | Filter to a category with no tips — confirm empty state UI
+
+--- TABLE 25 ---
+Req. ID | Requirement | Priority | Verification Method
+NFR-040 | All Firestore Security Rules SHALL be validated before production deployment. No rule SHALL permit unauthenticated reads or writes to any collection. | P1 | Firebase Rules Playground — test unauthenticated access
+NFR-041 | The domain restriction on institutional email SHALL be enforced at both the Firebase Auth level and in Firestore Security Rules. | P1 | Test with off-domain Google account — confirm double rejection
+NFR-042 | All Firebase API keys SHALL be stored as Vercel environment variables. No credentials SHALL appear in source code or the public repository. | P1 | GitHub repository inspection — confirm no secrets in code
+NFR-043 | Firestore Security Rules SHALL prevent any user from modifying another user's document. | P1 | Attempt cross-user document write — confirm rejection
+NFR-044 | Firestore Security Rules SHALL prevent any user from setting hidden: false on their own tip (circumventing community flagging). | P1 | Attempt self-unhide via direct SDK call — confirm rejection
+
+--- TABLE 26 ---
+5 — DATA MODEL SPECIFICATION
+
+--- TABLE 27 ---
+Field | Type | Constraints | Default / Auto-Populated
+id | string | Auto-generated Firestore document ID | Auto — Firestore
+title | string | Required. Max 120 characters. | User input
+content | string | Required. Max 2,000 characters. | User input
+category | string | Required. Enum: academics | social | infrastructure | career | User selection
+department | string | Required. From predefined department list. | User selection
+location | string | Required. From predefined location list. | User selection
+authorId | string | Required. Must equal authenticated user's UID. | Auto — Firebase Auth
+authorName | string | Required. Display name from Google account. | Auto — Firebase Auth
+upvotes | number | Integer >= 0. | Default: 0
+upvotedBy | array | Array of Firebase UIDs. Each UID appears at most once. | Default: []
+flagCount | number | Integer >= 0. | Default: 0
+flaggedBy | array | Array of Firebase UIDs. Each UID appears at most once. | Default: []
+hidden | boolean | Auto-set true when flagCount >= 3. Cannot be set to false by standard users. | Default: false
+semester | string | Format: 'Semester N, YYYY'. Auto-applied at creation. | Auto — application logic
+createdAt | timestamp | Firestore server timestamp. Cannot be set by client. | Auto — serverTimestamp()
+isVerified | boolean | Auto-set true when upvotes >= 10. | Default: false
+relevantCount | number | Count of 'Still Relevant?' confirmations. | Default: 0
+relevantBy | array | Array of UIDs that confirmed relevance. | Default: []
+
+--- TABLE 28 ---
+Field | Type | Constraints | Default / Auto-Populated
+uid | string | Must equal Firebase Auth UID. | Auto — Firebase Auth
+name | string | Required. Display name from Google account. | Auto — Firebase Auth
+email | string | Required. Must match institutional domain. | Auto — Firebase Auth
+college | string | Required. Captured at onboarding. | User input
+department | string | Required. Captured at onboarding. | User input
+year | string | Required. Year of study. Captured at onboarding. | User input
+totalUpvotes | number | Aggregated upvotes received across all authored tips. | Default: 0
+tipsCreated | number | Count of tips authored. | Default: 0
+bookmarks | array | Array of bookmarked tip IDs. | Default: []
+joinedAt | timestamp | Firestore server timestamp. Cannot be set by client. | Auto — serverTimestamp()
+
+--- TABLE 29 ---
+Field | Type | Constraints | Default / Auto-Populated
+id | string | Auto-generated Firestore document ID | Auto — Firestore
+title | string | Required. Max 120 characters. | User input
+content | string | Required. Max 1,000 characters. | User input
+authorId | string | Required. Must equal authenticated user's UID. | Auto — Firebase Auth
+authorName | string | Required. Display name. | Auto — Firebase Auth
+createdAt | timestamp | Firestore server timestamp. | Auto — serverTimestamp()
+expiresAt | timestamp | createdAt + 7 days. Computed at write time. | Auto — application logic
+hidden | boolean | Set to true when expiresAt is passed. | Default: false
+
+--- TABLE 30 ---
+Field | Type | Constraints | Default / Auto-Populated
+id | string | Auto-generated Firestore document ID | Auto — Firestore
+title | string | Required. Max 120 characters. | User input
+content | string | Required. Max 1,000 characters. | User input
+authorId | string | Required. Must equal authenticated user's UID. | Auto — Firebase Auth
+authorName | string | Required. | Auto — Firebase Auth
+replyCount | number | Integer >= 0. | Default: 0
+lastActivity | timestamp | Updated on each new reply. | Auto — application logic
+createdAt | timestamp | Firestore server timestamp. | Auto — serverTimestamp()
+hidden | boolean | Same flagging rules as tips. | Default: false
+
+--- TABLE 31 ---
+6 — FIRESTORE SECURITY RULES
+
+--- TABLE 32 ---
+Implementation Requirement
+These rules must be deployed to Firebase before any user-facing testing begins. No exceptions. Rules enforce authentication, domain restriction, and data integrity at the database layer — independent of frontend logic.
+
+--- TABLE 33 ---
+Req. ID | Requirement | Priority | Verification Method
+SR-001 | All Firestore collections SHALL deny all reads and writes by default unless explicitly permitted by a subsequent rule. | P1 | Firebase Rules Playground — unauthenticated access returns permission-denied
+SR-002 | All read and write operations SHALL require the requesting user to be authenticated (request.auth != null). | P1 | All tests performed as unauthenticated — all return denied
+SR-003 | All write operations SHALL require the requesting user's email to match the configured institutional domain. | P1 | Write with off-domain authenticated user — confirm denied
+
+--- TABLE 34 ---
+Req. ID | Requirement | Priority | Verification Method
+SR-010 | Any authenticated institutional-domain user SHALL be able to read any tip document where hidden == false. | P1 | Read a visible tip as authenticated user — confirm allowed
+SR-011 | Any authenticated institutional-domain user SHALL be able to create a new tip document if: (a) authorId equals their UID, (b) all required fields are present, (c) hidden is false, (d) flagCount and upvotes are 0. | P1 | Create valid tip — confirm allowed. Create with manipulated fields — confirm denied.
+SR-012 | A user SHALL be able to update only the following fields on a tip they did not author: upvotes, upvotedBy, flagCount, flaggedBy, relevantCount, relevantBy. | P1 | Attempt to update title as non-author — confirm denied
+SR-013 | A user SHALL be able to update isVerified and hidden fields ONLY via server-side logic (Firebase Admin SDK or Security Rules — not by standard users). | P1 | Attempt to set isVerified:true directly — confirm denied for standard users
+SR-014 | No user SHALL be able to delete a tip document via the client SDK. | P1 | Attempt tip deletion from client — confirm denied
+
+--- TABLE 35 ---
+Req. ID | Requirement | Priority | Verification Method
+SR-020 | A user SHALL be able to read their own user document (/users/{uid} where uid == request.auth.uid). | P1 | Read own document — confirm allowed
+SR-021 | A user SHALL NOT be able to read another user's document. | P1 | Read another user's document — confirm denied
+SR-022 | A user SHALL be able to create their own user document on first login. The document ID must equal their UID. | P1 | First login — confirm user document created
+SR-023 | A user SHALL be able to update only the following fields in their own document: department, year, bookmarks, tipsCreated, totalUpvotes. | P1 | Attempt to update email or uid — confirm denied
+SR-024 | No user SHALL be able to delete their own user document via the client SDK. | P1 | Attempt self-deletion — confirm denied
+
+--- TABLE 36 ---
+Req. ID | Requirement | Priority | Verification Method
+SR-030 | Any authenticated user SHALL be able to read notice documents where hidden == false and expiresAt > current time. | P1 | Read active notice — confirm allowed
+SR-031 | Any authenticated user SHALL be able to create a notice if: authorId equals their UID and all required fields are present. | P1 | Create valid notice — confirm allowed
+SR-032 | No standard user SHALL be able to update or delete a notice document. | P1 | Attempt update/delete — confirm denied
+
+--- TABLE 37 ---
+7 — FIRESTORE INDEX CONFIGURATION
+
+--- TABLE 38 ---
+Deployment Note
+All composite indexes listed below must be created in the Firebase console (or via firestore.indexes.json) before the application is deployed to production. Missing indexes will cause query failures in production.
+
+--- TABLE 39 ---
+Index ID | Collection | Fields (Ascending unless noted) | Used By
+IDX-001 | /tips | hidden ASC, upvotes DESC, createdAt DESC | Main feed — default sort
+IDX-002 | /tips | hidden ASC, category ASC, upvotes DESC | Category filter + upvote sort
+IDX-003 | /tips | hidden ASC, department ASC, upvotes DESC | Department filter + upvote sort
+IDX-004 | /tips | hidden ASC, location ASC, upvotes DESC | Location filter + upvote sort
+IDX-005 | /tips | hidden ASC, category ASC, department ASC, upvotes DESC | Combined category + department filter
+IDX-006 | /tips | hidden ASC, category ASC, location ASC, upvotes DESC | Combined category + location filter
+IDX-007 | /tips | hidden ASC, department ASC, location ASC, upvotes DESC | Combined department + location filter
+IDX-008 | /tips | hidden ASC, category ASC, department ASC, location ASC, upvotes DESC | All three filters combined
+IDX-009 | /notices | hidden ASC, expiresAt ASC, createdAt DESC | Notice board — active notices, recent first
+IDX-010 | /questions | hidden ASC, lastActivity DESC | Ask a Senior — recent activity sort
+
+--- TABLE 40 ---
+8 — INTERFACE REQUIREMENTS
+
+--- TABLE 41 ---
+Req. ID | Requirement | Priority | Verification Method
+IR-001 | All screens SHALL use #FCF9ED as the page background colour with no exceptions. | P1 | Visual audit of all screens
+IR-002 | All primary section headers and announcement banners SHALL use #064E3B (Forest Green) as the background colour. | P1 | Visual audit — headers and banners
+IR-003 | All primary action buttons (e.g. Start Exploring, Post Tip, Submit) SHALL use #E9D5FF (Soft Lavender) as the background colour. | P1 | Visual audit — all CTA buttons
+IR-004 | All primary text and borders SHALL use #1A1A1A (Charcoal Black). | P1 | Contrast ratio check — Charcoal on Cream
+IR-005 | Hero headings SHALL use a serif font: Newsreader or Fraunces. Body text and navigation SHALL use a sans-serif font: Inter or Outfit. | P1 | Font inspection via browser DevTools
+IR-006 | No design element (colour, font, component layout) SHALL be implemented without explicit written sign-off from the product team. | P1 | Process check — confirm mockup approval workflow
+
+--- TABLE 42 ---
+State | Trigger | Required Behaviour | Example
+Loading | Data fetch in progress | Display a loading skeleton or spinner. No layout shift. | Tips feed loading
+Empty | Query returns zero results | Display a descriptive message explaining why nothing is shown and a suggested next action. | No tips found for this filter
+Error | Network failure or write failure | Display a user-friendly error message. Offer a retry option. Do not expose raw Firebase error codes. | Failed to load tips
+
+--- TABLE 43 ---
+9 — TEST REQUIREMENTS
+
+--- TABLE 44 ---
+Test Protocol
+Before any feature is marked complete and merged to the main branch, all test cases for that feature must pass. Test results must be documented and shared with the product team. No deployment to production occurs without a full test pass.
+
+--- TABLE 45 ---
+Test ID | Scenario | Expected Result | Req. Reference
+T-001 | Login with valid institutional Google account | Login succeeds. User routed to onboarding (first time) or feed (returning user). | FR-001, FR-002, FR-003
+T-002 | Login with Gmail account (non-institutional) | Login rejected. Error message displayed: 'Only [college] email addresses are permitted.' | FR-003
+T-003 | First-time login — onboarding screen | Onboarding screen shown. Department and year captured. User document created in Firestore. | FR-004, FR-005
+T-004 | Second login by existing user | Onboarding screen NOT shown. User routed directly to feed. | FR-006
+T-005 | Sign out | Session cleared. User returned to login screen. Back navigation does not show authenticated content. | FR-007
+T-006 | Access tip URL while unauthenticated | Redirected to login screen. Tip detail not shown. | FR-001, NFR-040
+
+--- TABLE 46 ---
+Test ID | Scenario | Expected Result | Req. Reference
+T-010 | Submit valid tip with all fields populated | Tip created in Firestore. Semester stamp auto-applied. Success message shown. | FR-017, FR-018, FR-019
+T-011 | Submit tip with title exceeding 120 characters | Submission blocked. Character counter shows over-limit state. | FR-012
+T-012 | Submit tip with content exceeding 2,000 characters | Submission blocked. Character counter shows over-limit state. | FR-013
+T-013 | Submit tip with any required field empty | Submission blocked. All empty fields highlighted with error. | FR-020
+T-014 | Verify Firestore document structure after valid submission | All fields present with correct types. createdAt is server timestamp. | FR-018
+
+--- TABLE 47 ---
+Test ID | Scenario | Expected Result | Req. Reference
+T-020 | Log in and view main feed immediately | Tips visible. No prompt to post first. No gate of any kind. | FR-030
+T-021 | Apply category filter | Only tips matching selected category shown. | FR-032
+T-022 | Apply department filter | Only tips matching selected department shown. | FR-033
+T-023 | Apply all three filters simultaneously | Only tips matching all three criteria shown. | FR-035
+T-024 | Search for a keyword present in a tip title | Matching tips returned. | FR-036
+T-025 | Search for a keyword with no matching tips | Empty state message shown. | FR-036, NFR-032
+T-026 | View hidden tip via direct URL | 404 or redirect. Tip content not displayed. | FR-039
+
+--- TABLE 48 ---
+Test ID | Scenario | Expected Result | Req. Reference
+T-030 | Upvote a tip as User A | upvotes increments by 1. User A's UID added to upvotedBy. | FR-051, FR-053
+T-031 | Upvote same tip as User A again | upvotes decrements by 1. User A's UID removed from upvotedBy. | FR-052
+T-032 | Attempt to upvote own tip | Upvote button disabled/hidden. upvotes count unchanged. | FR-056
+T-033 | Add 10 upvotes to a tip | isVerified set to true. Verified badge appears on tip card and detail. | FR-054, FR-055
+T-034 | Flag a tip as User A | flagCount increments by 1. | FR-071, FR-073
+T-035 | Flag same tip as User A again | Flag rejected. flagCount unchanged. | FR-072
+T-036 | Three distinct users flag one tip | hidden set to true. Tip disappears from all feeds immediately. | FR-074, FR-075
+
+--- TABLE 49 ---
+Test ID | Scenario | Expected Result | Req. Reference
+T-040 | Post a valid notice | Notice appears on the board. expiresAt is 7 days from now. | FR-101, FR-102
+T-041 | View notice board after 7 days (test with backdated timestamp) | Expired notice no longer appears. Active notices remain. | FR-103
+T-042 | Notices displayed in reverse chronological order | Most recently posted notice appears first. | FR-104
+
+--- TABLE 50 ---
+10 — SYSTEM CONSTRAINTS & ASSUMPTIONS
+
+--- TABLE 51 ---
+Tip title max length | 120 characters — enforced client-side and via Firestore Rules
+Tip content max length | 2,000 characters — enforced client-side and via Firestore Rules
+Notice content max length | 1,000 characters
+Community flag auto-hide threshold | 3 flags — enforced automatically, no admin action required
+Verified badge upvote threshold | 10 upvotes — auto-applied, no admin action required
+Campus notice expiry | 7 days from creation — hard expiry, no override
+Upvotes per user per tip | 1 (toggle-able) — enforced via upvotedBy array check
+Flags per user per tip | 1 — enforced via flaggedBy array check
+Firebase free tier reads | 50,000 per day — MVP pilot must remain within this limit
+Authentication method | Google OAuth only — no email/password, no other providers
+Domain restriction | Single institutional domain per deployment — configurable per college
+
+--- TABLE 52 ---
+11 — OUT OF SCOPE (PHASE 2 AND BEYOND)
+
+--- TABLE 53 ---
+Feature | Deferred To | Notes
+Native mobile app (iOS / Android) | Phase 2+ | Web app in mobile browser is sufficient for Phase 1.
+3D campus map | Phase 2 | Three.js + React Three Fiber. Deferred per mentor feedback.
+AR (Augmented Reality) mode | Phase 2+ | Deferred. No experimental tech in MVP.
+Geofencing / proximity features | Phase 2 | Web Geolocation API + Haversine. 100m radius.
+AI-powered tip recommendations | Phase 2+ | Requires adoption data to be meaningful.
+Multi-college support | Phase 2 | Single college deployment for Phase 1 pilot.
+Alumni portal | Phase 2 | Graduates can access in Phase 2 only.
+Moderation dashboard | Phase 3 | Firebase console is sufficient for Phase 1 admin.
+Analytics dashboard for colleges | Phase 3 | Part of SaaS offering.
+Whitelabel SaaS | Phase 3 | $5/institution/month. Requires proven product.
+Batch-specific tip filters | Phase 2 | Year-of-study filtering per tip.
+Media uploads (images/PDFs) | Phase 2 | Firebase Storage configured but not enabled in Phase 1.
+Push notifications | Phase 2+ | Not required for Phase 1 habit formation.
+Offline mode / PWA | Phase 2+ | Internet connectivity assumed for pilot college.
+
+--- TABLE 54 ---
+12 — OPEN ISSUES & DECISIONS REQUIRED
+
+--- TABLE 55 ---
+Issue ID | Description | Owner | Target Resolution
+OI-001 | Exact institutional email domain for the pilot college must be confirmed and configured in the Firebase Auth allowed domain list. | Product Team | Before Step 1
+OI-002 | Final list of departments for the pilot college must be provided to populate the department dropdown. | Product Team | Before Step 3
+OI-003 | Final list of campus locations for the pilot college must be provided to populate the location tag dropdown. | Product Team | Before Step 3
+OI-004 | Semester date boundaries for the pilot college must be confirmed so the auto-semester-stamp logic is accurate. | Product Team | Before Step 3
+OI-005 | Decision required on how the 'Still Relevant?' button ages tips — is one semester the correct threshold, or should this be configurable per college? | Product Team | Before Step 9
+OI-006 | Custom domain for the pilot college deployment (Vercel subdomain vs. custom domain). If custom domain, DNS access is required from the college. | Product Team | Before Step 12
+OI-007 | Logo and final product name spelling/capitalisation confirmation (Time Capsule vs. TimeCapsule vs. timecapsule) for consistent branding across all surfaces. | Product Team | Before Step 2
+OI-008 | Notice board expiry mechanism — client-side filtering (compare expiresAt to Date.now()) vs. Cloud Function TTL. Recommendation: client-side filtering for Phase 1 to avoid Cloud Function billing. | Antigravity Dev Team | Before Step 10
+
+--- TABLE 56 ---
+13 — DOCUMENT SIGN-OFF
+
+--- TABLE 57 ---
+Party | Signature / Approval | Date
+Time Capsule Product Team | ________________________ | ________________________
+Antigravity — Development Lead | ________________________ | ________________________
+Antigravity — Project Manager | ________________________ | ________________________

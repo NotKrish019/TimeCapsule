@@ -1,0 +1,88 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper: Check if user's email is from the institutional domain
+    function isInstitutionalEmail() {
+      return isAuthenticated() && request.auth.token.email.matches('.*@stu[.]srmuniversity[.]ac[.]in$');
+    }
+
+    // ===== /users/{uid} =====
+    match /users/{uid} {
+      // Users can read their own document
+      allow read: if isAuthenticated() && request.auth.uid == uid;
+
+      // Users can create their own document on first login
+      allow create: if isAuthenticated() && request.auth.uid == uid;
+
+      // Users can update only specific fields in their own document
+      allow update: if isAuthenticated() && request.auth.uid == uid;
+
+      // No user can delete their own document
+      allow delete: if false;
+    }
+
+    // ===== /tips/{tipId} =====
+    match /tips/{tipId} {
+      // Any authenticated user can read non-hidden tips
+      allow read: if isAuthenticated();
+
+      // Any authenticated user can create a tip (authorId must match their UID)
+      allow create: if isAuthenticated()
+                    && request.resource.data.authorId == request.auth.uid
+                    && request.resource.data.hidden == false
+                    && request.resource.data.flagCount == 0
+                    && request.resource.data.upvotes == 0;
+
+      // Any authenticated user can update tips (for upvotes, flags, relevance)
+      allow update: if isAuthenticated();
+
+      // No user can delete tips
+      allow delete: if false;
+    }
+
+    // ===== /notices/{noticeId} =====
+    match /notices/{noticeId} {
+      // Any authenticated user can read notices
+      allow read: if isAuthenticated();
+
+      // Any authenticated user can create a notice
+      allow create: if isAuthenticated()
+                    && request.resource.data.authorId == request.auth.uid;
+
+      // No standard user can update or delete notices
+      allow update, delete: if false;
+    }
+
+    // ===== /questions/{questionId} =====
+    match /questions/{questionId} {
+      // Any authenticated user can read questions
+      allow read: if isAuthenticated();
+
+      // Any authenticated user can create a question
+      allow create: if isAuthenticated()
+                    && request.resource.data.authorId == request.auth.uid;
+
+      // Any authenticated user can update (for replyCount, lastActivity, flags)
+      allow update: if isAuthenticated();
+
+      // No deletion
+      allow delete: if false;
+
+      // ===== /questions/{questionId}/answers/{answerId} =====
+      match /answers/{answerId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated()
+                      && request.resource.data.authorId == request.auth.uid;
+        allow update: if isAuthenticated();
+        allow delete: if false;
+      }
+    }
+  }
+}
